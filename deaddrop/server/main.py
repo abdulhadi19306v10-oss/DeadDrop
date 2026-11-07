@@ -42,6 +42,17 @@ async def health():
     return {"status": "ok", "service": "DeadDrop Relay Server", "version": "1.0.0"}
 
 
-if __name__ == "__main__":
+def main():
     import uvicorn
-    uvicorn.run("deaddrop.server.main:app", host="127.0.0.1", port=8000, reload=True)
+    import argparse
+    parser = argparse.ArgumentParser(description="DeadDrop Relay Server")
+    parser.add_argument("--host", default="127.0.0.1", help="Host address")
+    parser.add_argument("--port", type=int, default=8000, help="Port")
+    parser.add_argument("--reload", action="store_true", help="Enable hot reload")
+    args = parser.parse_args()
+    print(f"[*] Starting DeadDrop Relay on http://{args.host}:{args.port}")
+    uvicorn.run("deaddrop.server.main:app", host=args.host, port=args.port, reload=args.reload)
+
+
+if __name__ == "__main__":
+    main()

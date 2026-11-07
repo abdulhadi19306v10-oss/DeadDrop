@@ -50,45 +50,64 @@ DeadDrop provides true **zero-knowledge asynchronous file exchange**:
 
 ---
 
-## 3. Quick Start & Installation
+## 3. Single-Command Installation
 
-### Requirements:
-- Python 3.11+
-- Virtual environment (recommended)
+DeadDrop features an automated single-command installer for both **Kali Linux** and **Windows** that creates the virtual environment, configures dependencies, generates desktop shortcuts, and registers the global `deaddrop` CLI command:
 
+### On Linux & Kali Linux:
 ```bash
-# Clone the repository
 git clone https://github.com/abdulhadi19306v10-oss/DeadDrop.git
 cd DeadDrop
-
-# Setup virtual environment
-python -m venv .venv
-
-# Activate environment
-# On Linux / Kali:
-source .venv/bin/activate
-# On Windows:
-.\.venv\Scripts\activate
-
-# Install dependencies
-pip install -r requirements.txt
+chmod +x install.sh && ./install.sh
 ```
+
+### On Windows (PowerShell or Command Prompt):
+```powershell
+git clone https://github.com/abdulhadi19306v10-oss/DeadDrop.git
+cd DeadDrop
+powershell -ExecutionPolicy Bypass -File .\install.ps1
+```
+*(Or simply double-click `install.bat`)*
+
+After installation, the **`deaddrop`** command is globally available from any terminal!
 
 ---
 
 ## 4. Running DeadDrop
 
-### Step 1: Start the Relay Server
-In a terminal, start the FastAPI relay backend:
-```bash
-python -m deaddrop.server.main
-```
-The server will start on `http://127.0.0.1:8000`. You can inspect the health endpoint at `http://127.0.0.1:8000/health`.
+### Option A: Complete CLI Mode (Headless / Terminal Only)
+Ideal for SSH sessions, servers, or users who prefer not to use a GUI:
 
-### Step 2: Launch the PySide6 Desktop GUI
-In a separate terminal, launch the desktop application:
 ```bash
-python -m deaddrop.client.app
+# 1. Start Relay Server in the background or separate terminal:
+deaddrop server
+
+# 2. Encrypt & Send a file (renders ASCII QR Code in terminal for Google Authenticator):
+deaddrop send secret_document.pdf --expires 24 --downloads 1
+
+# 3. Receive, authenticate with TOTP, and decrypt file:
+deaddrop receive DD1-<drop_id>-<link_secret> --out ./downloads
+
+# 4. List your active drops:
+deaddrop list
+
+# 5. Inspect immutable audit log:
+deaddrop audit <drop_id>
+
+# 6. Burn and shred a drop immediately:
+deaddrop burn <drop_id>
+
+# 7. Run Security Lab attack simulations directly in terminal:
+deaddrop lab
+```
+
+### Option B: PySide6 Desktop GUI Mode
+Launch the Kali Linux-themed graphical desktop application:
+
+```bash
+deaddrop gui
+# Or run directly:
+python run_app.py
 ```
 
 ---

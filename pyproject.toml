@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "deaddrop"
+version = "1.0.0"
+description = "Zero-Knowledge 2FA-Protected Secure File Exchange"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [
+    { name = "DeadDrop Security Team" }
+]
+dependencies = [
+    "cryptography>=42.0.0",
+    "argon2-cffi>=23.1.0",
+    "PySide6>=6.6.0",
+    "zxcvbn>=4.4.28",
+    "qrcode>=7.4.2",
+    "pillow>=10.2.0",
+    "httpx>=0.27.0",
+    "fastapi>=0.110.0",
+    "uvicorn>=0.28.0",
+    "pyotp>=2.9.0",
+    "slowapi>=0.1.9",
+    "pydantic>=2.6.0",
+    "python-multipart>=0.0.9",
+]
+
+[project.scripts]
+deaddrop = "deaddrop.client.cli:main"
+deaddrop-server = "deaddrop.server.main:main"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["deaddrop*"]
