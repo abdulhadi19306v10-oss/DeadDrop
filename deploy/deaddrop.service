@@ -1,0 +1,17 @@
+[Unit]
+Description=DeadDrop FastAPI Cloud Relay Service
+After=network.target
+
+[Service]
+Type=simple
+User=deaddrop
+WorkingDirectory=/opt/deaddrop
+ExecStart=/opt/deaddrop/.venv/bin/uvicorn deaddrop.server.main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+Environment=PYTHONUNBUFFERED=1
+Environment=DEADDROP_BLOB_DIR=/var/lib/deaddrop/blobs
+Environment=DEADDROP_DB_PATH=/var/lib/deaddrop/deaddrop.db
+
+[Install]
+WantedBy=multi-user.target

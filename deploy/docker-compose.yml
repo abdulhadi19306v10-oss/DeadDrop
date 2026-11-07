@@ -1,0 +1,22 @@
+version: "3.8"
+
+services:
+  relay:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    container_name: deaddrop-relay
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEADDROP_MASTER_KEY=0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef
+      - DEADDROP_BLOB_DIR=/app/blob_storage
+      - DEADDROP_DB_PATH=/app/data/deaddrop.db
+    volumes:
+      - relay_blobs:/app/blob_storage
+      - relay_data:/app/data
+
+volumes:
+  relay_blobs:
+  relay_data:

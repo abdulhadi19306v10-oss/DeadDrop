@@ -20,6 +20,7 @@ htmlcov/
 *.db
 *.sqlite
 *.sqlite3
+.master_key.bin
 blob_storage/
 test_blobs/
 test_downloads/
