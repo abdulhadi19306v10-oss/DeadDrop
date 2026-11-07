@@ -21,6 +21,7 @@ from PySide6.QtWidgets import (
 )
 
 from deaddrop.client.api import DeadDropClient
+from deaddrop.client.ui.widgets import SixBoxTotpInput
 from deaddrop.client.workers import UnlockDownloadWorker
 
 
@@ -79,14 +80,12 @@ class ReceiveView(QWidget):
 
         totp_row = QHBoxLayout()
         self.totp_label = QLabel("6-Digit TOTP:")
+        self.totp_label.setStyleSheet("font-weight: bold; color: #58a6ff;")
         totp_row.addWidget(self.totp_label)
 
-        self.totp_input = QLineEdit()
-        self.totp_input.setPlaceholderText("e.g. 123456")
-        self.totp_input.setMaxLength(6)
-        self.totp_input.setObjectName("monoField")
-        self.totp_input.setStyleSheet("font-size: 16px; letter-spacing: 4px; font-weight: bold;")
+        self.totp_input = SixBoxTotpInput()
         totp_row.addWidget(self.totp_input)
+        totp_row.addStretch()
         twofa_layout.addLayout(totp_row)
 
         backup_row = QHBoxLayout()
@@ -181,9 +180,9 @@ class ReceiveView(QWidget):
         totp_code = None
         backup_code = None
         if self.totp_input.isVisible():
-            totp_code = self.totp_input.text().strip()
+            totp_code = self.totp_input.get_code()
             if len(totp_code) != 6 or not totp_code.isdigit():
-                QMessageBox.warning(self, "Invalid TOTP", "Please enter a 6-digit Google Authenticator code.")
+                QMessageBox.warning(self, "Invalid TOTP", "Please enter a 6-digit Google Authenticator code in the boxes.")
                 return
         else:
             backup_code = self.backup_input.text().strip()

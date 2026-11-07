@@ -46,6 +46,111 @@ def generate_passphrase(num_words: int = 4) -> str:
     return f"{'-'.join(chosen)}-{num}{sym}"
 
 
+class SingleDigitBox(QLineEdit):
+    """Single-digit input box for segmented TOTP verification."""
+
+    backspace_pressed = Signal()
+
+    def __init__(self, index: int, parent=None):
+        super().__init__(parent)
+        self.index = index
+        self.setMaxLength(1)
+        self.setAlignment(Qt.AlignCenter)
+        self.setFixedSize(45, 52)
+        self.setFont(QFont("Consolas", 20, QFont.Bold))
+        self.setStyleSheet("""
+            QLineEdit {
+                background-color: #0d1117;
+                color: #58a6ff;
+                border: 2px solid #30363d;
+                border-radius: 8px;
+            }
+            QLineEdit:focus {
+                border: 2px solid #58a6ff;
+                background-color: #161b22;
+            }
+        """)
+
+    def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Backspace:
+            if not self.text():
+                self.backspace_pressed.emit()
+            super().keyPressEvent(event)
+        else:
+            super().keyPressEvent(event)
+
+
+class SixBoxTotpInput(QWidget):
+    """Six-box segmented numeric TOTP input with auto-advance and clipboard paste support."""
+
+    code_changed = Signal(str)
+    completed = Signal(str)
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.boxes: List[SingleDigitBox] = []
+
+        layout = QHBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setSpacing(10)
+
+        for i in range(6):
+            box = SingleDigitBox(i, self)
+            box.textChanged.connect(lambda text, idx=i: self._on_text_changed(text, idx))
+            box.backspace_pressed.connect(lambda idx=i: self._on_backspace(idx))
+            self.boxes.append(box)
+            layout.addWidget(box)
+            if i == 2:
+                # Add separator dash between 3rd and 4th box
+                dash = QLabel("—")
+                dash.setStyleSheet("color: #8b949e; font-weight: bold; font-size: 16px;")
+                layout.addWidget(dash)
+
+        layout.addStretch()
+
+    def _on_text_changed(self, text: str, index: int):
+        # Handle multi-character paste
+        if len(text) > 1:
+            digits = "".join(ch for ch in text if ch.isdigit())
+            self.set_code(digits[:6])
+            return
+
+        if text and not text.isdigit():
+            self.boxes[index].clear()
+            return
+
+        if text and index < 5:
+            self.boxes[index + 1].setFocus()
+            self.boxes[index + 1].selectAll()
+
+        code = self.get_code()
+        self.code_changed.emit(code)
+        if len(code) == 6:
+            self.completed.emit(code)
+
+    def _on_backspace(self, index: int):
+        if index > 0:
+            self.boxes[index - 1].setFocus()
+            self.boxes[index - 1].clear()
+
+    def get_code(self) -> str:
+        return "".join(b.text().strip() for b in self.boxes)
+
+    def set_code(self, code: str):
+        clean = "".join(ch for ch in code if ch.isdigit())
+        for i in range(6):
+            val = clean[i] if i < len(clean) else ""
+            self.boxes[i].setText(val)
+        if len(clean) >= 6:
+            self.boxes[5].setFocus()
+
+    def clear(self):
+        for b in self.boxes:
+            b.clear()
+        if self.boxes:
+            self.boxes[0].setFocus()
+
+
 class PasswordStrengthBar(QWidget):
     """Visual password strength meter with zxcvbn evaluation."""
 
