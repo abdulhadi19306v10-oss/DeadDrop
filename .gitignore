@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+.venv/
+venv/
+ENV/
+env/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# DeadDrop data & storage
+*.db
+*.sqlite
+*.sqlite3
+blob_storage/
+test_blobs/
+test_downloads/
+*.log
+
+# Distribution / Packaging
+dist/
+build/
+*.egg-info/
+
+# OS / Editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
